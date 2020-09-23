@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/cli"
 )
 
@@ -15,6 +14,15 @@ import (
 var Version string
 
 func main() {
+	// Load env-file if it exists first
+	if filename, found := os.LookupEnv("PLUGIN_ENV_FILE"); found {
+		godotenv.Load(filename)
+	}
+
+	if _, err := os.Stat("/run/drone/env"); err == nil {
+		godotenv.Overload("/run/drone/env")
+	}
+
 	year := fmt.Sprintf("%v", time.Now().Year())
 	app := cli.NewApp()
 	app.Name = "Drone Discord"
@@ -167,19 +175,15 @@ func main() {
 			Usage:  "pull request",
 			EnvVar: "DRONE_PULL_REQUEST",
 		},
-		cli.Float64Flag{
-			Name:   "job.started",
-			Usage:  "job started",
+		cli.Int64Flag{
+			Name:   "build.started",
+			Usage:  "build started",
 			EnvVar: "DRONE_BUILD_STARTED",
 		},
-		cli.Float64Flag{
-			Name:   "job.finished",
-			Usage:  "job finished",
+		cli.Int64Flag{
+			Name:   "build.finished",
+			Usage:  "build finished",
 			EnvVar: "DRONE_BUILD_FINISHED",
-		},
-		cli.StringFlag{
-			Name:  "env-file",
-			Usage: "source env file",
 		},
 		cli.BoolFlag{
 			Name:   "github",
@@ -224,10 +228,6 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	if c.String("env-file") != "" {
-		_ = godotenv.Load(c.String("env-file"))
-	}
-
 	plugin := Plugin{
 		GitHub: GitHub{
 			Workflow:  c.String("github.workflow"),
@@ -257,8 +257,8 @@ func run(c *cli.Context) error {
 			Event:    c.String("build.event"),
 			Status:   c.String("build.status"),
 			Link:     c.String("build.link"),
-			Started:  c.Float64("job.started"),
-			Finished: c.Float64("job.finished"),
+			Started:  c.Int64("build.started"),
+			Finished: c.Int64("build.finished"),
 			PR:       c.String("pull.request"),
 			DeployTo: c.String("deploy.to"),
 		},

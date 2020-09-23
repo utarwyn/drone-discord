@@ -9,7 +9,7 @@
     steps: [
       {
         name: 'vet',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         commands: [
           'make vet',
@@ -23,7 +23,7 @@
       },
       {
         name: 'lint',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         commands: [
           'make lint',
@@ -37,7 +37,7 @@
       },
       {
         name: 'misspell',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         commands: [
           'make misspell-check',
@@ -51,7 +51,7 @@
       },
       {
         name: 'test',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         environment: {
           WEBHOOK_ID: { 'from_secret': 'webhook_id' },
@@ -95,7 +95,7 @@
     steps: [
       {
         name: 'build-push',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -111,7 +111,7 @@
       },
       {
         name: 'build-tag',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         environment: {
           CGO_ENABLED: '0',
@@ -125,7 +125,7 @@
       },
       {
         name: 'executable',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         commands: [
           './release/' + os + '/' + arch + '/' + name + ' --help',
@@ -190,7 +190,7 @@
     steps: [
       {
         name: 'build-all-binary',
-        image: 'golang:1.13',
+        image: 'golang:1.14',
         pull: 'always',
         commands: [
           'make release'
@@ -237,7 +237,7 @@
         settings: {
           webhook_id: { from_secret: 'webhook_id' },
           webhook_token: { from_secret: 'webhook_token' },
-          message: '{{#success build.status}} ✅  Build #{{build.number}} of `{{repo.name}}` succeeded.\n\n📝 Commit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ```\n\n🌐 {{ build.link }} {{else}} ❌  Build #{{build.number}} of `{{repo.name}}` failed.\n\n📝 Commit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ```\n\n🌐 {{ build.link }} {{/success}}\n',
+          message: '{{#success build.status}} ✅  Build #{{build.number}} of `{{repo.name}}` succeeded.\n\n📝 Commit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ```\n🌐 {{ build.link }}\n\n ✅ duration: {{duration build.started build.finished}} \n\n ✅ started: {{datetime build.started "2006/01/02 15:04" "Asia/Taipei"}} \n\n ✅ finished: {{datetime build.finished "2006/01/02 15:04" "Asia/Taipei"}} {{else}} ❌  Build #{{build.number}} of `{{repo.name}}` failed.\n\n📝 Commit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ```\n🌐 {{ build.link }}\n\n ✅ duration: {{duration build.started build.finished}} \n\n ✅ started: {{datetime build.started "2006/01/02 15:04" "Asia/Taipei"}} \n\n ✅ finished: {{datetime build.finished "2006/01/02 15:04" "Asia/Taipei"}}{{/success}}\n',
         },
       },
       {
